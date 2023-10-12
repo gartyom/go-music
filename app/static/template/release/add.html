@@ -1,0 +1,40 @@
+{{ define "content" }}
+<div class="w-[calc(100%-40px)] h-fit mx-auto pt-5 pb-16" id="add">
+    <form enctype="multipart/form-data" hx-post="/release" hx-trigger="submit" id="add-form" hx-swap="none">
+        <div class="m-5 relative">
+            <div class="font-bold text-lg">Артист</div>
+            <input class="border border-stone-900 focus:outline-none rounded-none" type="search" name="artist"
+                id="input-artist"><br>
+        </div>
+        <div class="m-5 relative">
+            <div class="font-bold text-lg">Релиз</div>
+            <input class="border border-stone-900 focus:outline-none rounded-none" type="search" name="release"
+                id="input-release"><br>
+        </div>
+        <div class="m-5 relative">
+            <div class="font-bold text-lg">Обложка</div>
+            <div class="font-normal text-base" id="input-cover-description">Выберите файл (jpeg/jpg)</div>
+            <input class="hidden" id="input-cover" type="file" name="release_cover" />
+            <label class="w-40 h-40 block border border-stone-900 rounded-md bg-stone-900 overflow-hidden"
+                for="input-cover">
+                <img class="object-cover w-8 h-8 mx-auto top-1/2 -translate-y-2/4 relative" src="/static/icons/plus.png"
+                    id="label-cover-image" />
+            </label>
+        </div>
+        <div class="m-5 relative">
+            <div class="font-bold text-lg">Песни</div>
+            <div class="font-normal text-base" id="input-track-description">Добавьте архив с песнями (rar)</div>
+            <input class="hidden" id="input-track" type="file" name="release_tracks" />
+            <label class="w-40 h-40 block border border-stone-900 rounded-md bg-stone-900" for="input-track">
+                <img class="object-cover w-8 h-8 mx-auto top-1/2 -translate-y-2/4 relative" src="/static/icons/plus.png"
+                    id="label-track-image" />
+            </label>
+        </div>
+        <button class="w-40 h-12 bg-stone-900 mt-3 ml-5 mb-5 rounded-md text-stone-50 font-bold"
+            type="submit">Добавить</button>
+    </form>
+    <script src="/static/js/add.js"></script>
+</div>
+{{ end }}
+
+{{ template "content"}}

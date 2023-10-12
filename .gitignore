@@ -1,0 +1,3 @@
+/uploads/*
+/dockerfiles/*.env
+tailwind.config.js
