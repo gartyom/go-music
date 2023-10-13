@@ -7,5 +7,5 @@ import (
 )
 
 func artistUrls(mux *goji.Mux, cnt *controller.Controller) {
-	mux.HandleFunc(pat.Post("/artist"), cnt.Artist.AddNew)
+	mux.HandleFunc(pat.Post("/artist"), cnt.Artist.New)
 }

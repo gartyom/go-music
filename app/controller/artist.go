@@ -16,6 +16,6 @@ func NewArtistController(srv *service.Service) artistController {
 	}
 }
 
-func (ac *artist_controller) AddNew(w http.ResponseWriter, r *http.Request) {
+func (ac *artist_controller) New(w http.ResponseWriter, r *http.Request) {
 	// ac.service.Artist.AddNew()
 }

@@ -20,7 +20,7 @@ func main() {
 }
 
 func Run() error {
-	prod := true
+	prod := false
 	conf := config.Get(prod)
 
 	db := database.Connect(conf)

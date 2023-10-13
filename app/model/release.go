@@ -1,9 +1,7 @@
 package model
 
 type Release struct {
-	Title  string `json:"name"`
-	Artist string `json:"artist"`
-	Type   string `json:"type"`
-	Cover  string `json:"cover"`
-	Tracks []Track
+	Uuid  string `json:"uuid"`
+	Title string `json:"name"`
+	Image string `json:"cover"`
 }

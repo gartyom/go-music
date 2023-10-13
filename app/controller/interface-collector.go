@@ -8,9 +8,9 @@ type staticController interface {
 
 type releaseController interface {
 	ServeAddTemplate(w http.ResponseWriter, r *http.Request)
-	AddNew(w http.ResponseWriter, r *http.Request)
+	New(w http.ResponseWriter, r *http.Request)
 }
 
 type artistController interface {
-	AddNew(w http.ResponseWriter, r *http.Request)
+	New(w http.ResponseWriter, r *http.Request)
 }

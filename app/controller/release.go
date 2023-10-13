@@ -1,7 +1,9 @@
 package controller
 
 import (
-	"fmt"
+	"archive/zip"
+	"image/jpeg"
+	"log"
 	"net/http"
 	"text/template"
 
@@ -33,23 +35,83 @@ func (rc *release_controller) ServeAddTemplate(w http.ResponseWriter, r *http.Re
 	tmpl.Execute(w, nil)
 }
 
-func (rc *release_controller) AddNew(w http.ResponseWriter, r *http.Request) {
-	// release := r.FormValue("release")
+func (rc *release_controller) New(w http.ResponseWriter, r *http.Request) {
+
+	var err error
 	artist_name := r.FormValue("artist")
-
-	fmt.Println(artist_name)
-
-	_, err := rc.service.Artist.FindByName(artist_name)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if artist_name == "" {
+		s := "Error: artist name is missing"
+		log.Println(s)
+		http.Error(w, s, http.StatusBadRequest)
+		return
 	}
 
-	// cover, cheader, err := r.FormFile("release_cover")
-	// defer cover.Close()
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
+	release_title := r.FormValue("release")
+	if release_title == "" {
+		s := "Error: release title is missing"
+		log.Println(s)
+		http.Error(w, s, http.StatusBadRequest)
+		return
+	}
 
-	// rc.service.Release.AddNew(release)
+	cover, _, err := r.FormFile("release_cover")
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	archive, _, err := r.FormFile("release_songs")
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	image, err := jpeg.Decode(cover)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//Finding size of archive
+	fileSize, err := archive.Seek(0, 2)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	_, err = archive.Seek(0, 0)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	unzipper, err := zip.NewReader(archive, fileSize)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// read files from unzipper
+	// check if mp3
+	// if ok send to service.Song.NewMany or something
+
+	artists, err := rc.service.Artist.GetByNameMany(artist_name, "")
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = rc.service.Release.New(artists, release_title, image)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 }

@@ -5,11 +5,15 @@ import (
 )
 
 type Repository struct {
-	Artist artistPgRepository
+	Artist       artistPgRepository
+	Release      releasePgRepository
+	RelaseArtist releaseArtistPgRepository
 }
 
 func Init(db *sql.DB) *Repository {
 	return &Repository{
-		NewArtistSqlRepo(db),
+		NewArtistPgRepo(db),
+		NewReleasePgRepo(db),
+		NewReleaseArtistPgRepo(db),
 	}
 }

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"errors"
+	"strings"
 
 	"github.com/gartyom/go-music/model"
 	"github.com/gartyom/go-music/repository"
@@ -17,20 +17,31 @@ func NewArtistService(repo *repository.Repository) artistService {
 	}
 }
 
-func (as *artist_service) AddNew(artist_name string, image string) (*model.Artist, error) {
+func (as *artist_service) New(artist_name string, image string) (*model.Artist, error) {
 
 	return nil, nil
 }
 
-func (as *artist_service) FindByName(artist_name string) (*model.Artist, error) {
-	if artist_name == "" {
-		return nil, errors.New("artist name is empty")
+func (as *artist_service) GetByName(artist_name string) (*model.Artist, error) {
+	artist, err := as.repo.Artist.GetByName(artist_name)
+	return artist, err
+}
+
+func (as *artist_service) GetByNameMany(artist_name string, sep string) ([]*model.Artist, error) {
+
+	if sep == "" {
+		sep = "/"
 	}
 
-	_, err := as.repo.Artist.FindName(artist_name)
-	if err != nil {
-		return nil, err
+	var a []*model.Artist
+	for _, v := range strings.Split(artist_name, sep) {
+		v = strings.TrimSpace(v)
+		artist, err := as.repo.Artist.GetByName(v)
+		if err != nil {
+			return nil, err
+		}
+		a = append(a, artist)
 	}
 
-	return nil, nil
+	return a, nil
 }
