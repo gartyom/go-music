@@ -22,8 +22,8 @@ func (repo *artist_pg_repo) New(artist *model.Artist) (sql.Result, error) {
 	return nil, nil
 }
 
-func (repo *artist_pg_repo) GetByName(artist_name string) (*model.Artist, error) {
+func (repo *artist_pg_repo) GetByName(artistName string) (*model.Artist, error) {
 	var artist model.Artist
-	err := repo.db.QueryRow("SELECT * FROM artist WHERE name = $1", artist_name).Scan(&artist.Uuid, &artist.Name, &artist.Image)
+	err := repo.db.QueryRow("SELECT * FROM artist WHERE name = $1", artistName).Scan(&artist.Uuid, &artist.Name, &artist.Image)
 	return &artist, err
 }

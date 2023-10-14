@@ -1,5 +1,4 @@
 /uploads/*
 /dockerfiles/*.env
 tailwind.config.js
-test_songs.rar
-test_cover.jpg
+/test_files/*

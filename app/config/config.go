@@ -11,14 +11,16 @@ import (
 )
 
 type Config struct {
-	IsProduction bool
-	DbHost       string `env:"DB_HOST"`
-	DbName       string `env:"DB_NAME"`
-	DbUser       string `env:"DB_USER"`
-	DbPassword   string `env:"DB_PASSWORD"`
-	DbPort       string `env:"DB_PORT"`
-	UploadsDir   string `env:"UPLOADS_DIR"`
-	StaticDir    string `env:"STATIC_DIR"`
+	IsProd     string `env:"IS_PROD"`
+	DbHost     string `env:"DB_HOST"`
+	DbName     string `env:"DB_NAME"`
+	DbUser     string `env:"DB_USER"`
+	DbPassword string `env:"DB_PASSWORD"`
+	DbPort     string `env:"DB_PORT"`
+	UploadsDir string `env:"UPLOADS_DIR"`
+	StaticDir  string `env:"STATIC_DIR"`
+	AppPort    string `env:"APP_PORT"`
+	AppHost    string `env:"APPP_HOST"`
 }
 
 var (
@@ -27,11 +29,11 @@ var (
 	tagName = "env"
 )
 
-func Get(prod bool) *Config {
+func Get() *Config {
 	once.Do(func() {
 		var configBytes []byte
 		var err error
-		if prod == true {
+		if os.Getenv("IS_PROD") != "" {
 			if err := readEnv(); err != nil {
 				log.Fatal(err)
 			}
@@ -43,14 +45,16 @@ func Get(prod bool) *Config {
 
 		} else {
 			Conf = Config{
-				IsProduction: prod,
-				DbUser:       "admin",
-				DbPassword:   "admin",
-				DbHost:       "localhost",
-				DbName:       "postgres",
-				DbPort:       "5432",
-				UploadsDir:   "../uploads",
-				StaticDir:    "./static",
+				IsProd:     "false",
+				DbUser:     "admin",
+				DbPassword: "admin",
+				DbHost:     "localhost",
+				DbName:     "postgres",
+				DbPort:     "5432",
+				UploadsDir: "../uploads",
+				StaticDir:  "./static",
+				AppPort:    "8000",
+				AppHost:    "0.0.0.0",
 			}
 			configBytes, err = json.MarshalIndent(Conf, "", "  ")
 			if err != nil {

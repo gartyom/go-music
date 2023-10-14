@@ -7,11 +7,11 @@ import (
 )
 
 type artistService interface {
-	New(artist_name string, image string) (*model.Artist, error)
-	GetByName(artist_name string) (*model.Artist, error)
-	GetByNameMany(artist_name string, sep string) ([]*model.Artist, error)
+	New(artistName string, image string) (*model.Artist, error)
+	GetByName(artistName string) (*model.Artist, error)
+	GetByNameMany(artistName string, sep string) ([]*model.Artist, error)
 }
 
 type releaseService interface {
-	New(artists []*model.Artist, release_title string, cover image.Image) error
+	New(artists []*model.Artist, releaseTitle string, cover image.Image) (string, error)
 }

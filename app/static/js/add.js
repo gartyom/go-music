@@ -34,12 +34,12 @@ inputSong.addEventListener("change", (e) => {
   const [file] = inputSong.files;
   if (file) {
     let ext = file.name.split(".").pop();
-    if (ext === "rar") {
+    if (ext === "zip") {
       lableSongImage.src = "/static/icons/check-mark.png";
       inputSongDescription.innerHTML = file.name;
     } else {
       lableSongImage.src = "/static/icons/plus.png";
-      inputSongDescription.innerHTML = "Добавьте архив с песнями (rar)!";
+      inputSongDescription.innerHTML = "Добавьте архив с песнями (zip)!";
       inputSong.files = null;
     }
   }

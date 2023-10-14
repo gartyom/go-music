@@ -2,12 +2,12 @@ package controller
 
 import (
 	"archive/zip"
-	"image/jpeg"
 	"log"
 	"net/http"
 	"text/template"
 
 	"github.com/gartyom/go-music/config"
+	"github.com/gartyom/go-music/helpers"
 	"github.com/gartyom/go-music/service"
 )
 
@@ -37,81 +37,46 @@ func (rc *release_controller) ServeAddTemplate(w http.ResponseWriter, r *http.Re
 
 func (rc *release_controller) New(w http.ResponseWriter, r *http.Request) {
 
-	var err error
-	artist_name := r.FormValue("artist")
-	if artist_name == "" {
-		s := "Error: artist name is missing"
-		log.Println(s)
-		http.Error(w, s, http.StatusBadRequest)
+	release := helpers.ParseReleaseForm(r)
+	if release.Err != nil {
+		log.Println(release.Err.Error())
+		http.Error(w, release.Err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	release_title := r.FormValue("release")
-	if release_title == "" {
-		s := "Error: release title is missing"
-		log.Println(s)
-		http.Error(w, s, http.StatusBadRequest)
-		return
-	}
+	fileSize, err := helpers.GetArchiveSize(release.Archive)
 
-	cover, _, err := r.FormFile("release_cover")
+	unzipper, err := zip.NewReader(release.Archive, fileSize)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	archive, _, err := r.FormFile("release_songs")
+	err = helpers.CheckArchiveFiles(unzipper)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	image, err := jpeg.Decode(cover)
+	err = helpers.ExtractID3Metadata(unzipper)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	// artists, err := rc.service.Artist.GetByNameMany(release.Artist, "")
+	// if err != nil {
+	// 	log.Println(err.Error())
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
 
-	//Finding size of archive
-	fileSize, err := archive.Seek(0, 2)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	_, err = archive.Seek(0, 0)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	unzipper, err := zip.NewReader(archive, fileSize)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// read files from unzipper
-	// check if mp3
-	// if ok send to service.Song.NewMany or something
-
-	artists, err := rc.service.Artist.GetByNameMany(artist_name, "")
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = rc.service.Release.New(artists, release_title, image)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
+	// releaseUuid, err := rc.service.Release.New(artists, release.Title, release.Image)
+	// if err != nil {
+	// 	log.Println(err.Error())
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
 }

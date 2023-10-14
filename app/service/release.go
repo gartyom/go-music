@@ -22,62 +22,61 @@ func NewReleaseService(repo *repository.Repository) releaseService {
 	}
 }
 
-func (rs *release_service) New(artists []*model.Artist, release_title string, cover image.Image) error {
+func (rs *release_service) New(artists []*model.Artist, releaseTitle string, cover image.Image) (string, error) {
 	// Generating uuid for image
-	var release_id string
+	var releaseUuid string
 	for true {
-		release_id = helpers.GenerateUUID()
-		_, err := rs.repo.Release.GetById(release_id)
+		releaseUuid = helpers.GenerateUUID()
+		_, err := rs.repo.Release.GetById(releaseUuid)
 		if err == sql.ErrNoRows {
 			break
 		} else if err != nil {
-			return err
+			return "", err
 		}
 	}
 
 	//Insterting release with no image in DataBase
 	_, err := rs.repo.Release.New(&model.Release{
-		Uuid:  release_id,
-		Title: release_title,
+		Uuid:  releaseUuid,
+		Title: releaseTitle,
 		Image: "", // image is empty
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	//Creating image inside {UploadsDir} folder
-	ipath := "/images/release/" + release_id
+	ipath := "/images/release/" + releaseUuid
 	f, err := os.Create(config.Conf.UploadsDir + ipath)
 	defer f.Close()
 	if err != nil {
-		rs.repo.Release.Delete(release_id)
-		return err
+		rs.repo.Release.Delete(releaseUuid)
+		return "", err
 	}
 	//Writing form image to the image we created
 	err = jpeg.Encode(f, cover, nil)
 	if err != nil {
-		rs.repo.Release.Delete(release_id)
-		return err
+		rs.repo.Release.Delete(releaseUuid)
+		return "", err
 	}
-	f.Close()
 
 	//Updating image column of inserted release
-	_, err = rs.repo.Release.UpdateImage(release_id, ipath)
+	_, err = rs.repo.Release.UpdateImage(releaseUuid, ipath)
 	if err != nil {
-		rs.repo.Release.Delete(release_id)
-		return err
+		rs.repo.Release.Delete(releaseUuid)
+		return "", err
 	}
 
 	//Creating many-to-many release<->artist relation
 	for _, a := range artists {
 		_, err = rs.repo.RelaseArtist.New(&model.ReleaseArtist{
 			ArtistUuid:  a.Uuid,
-			ReleaseUuid: release_id,
+			ReleaseUuid: releaseUuid,
 		})
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
 
-	return nil
+	return releaseUuid, err
 }

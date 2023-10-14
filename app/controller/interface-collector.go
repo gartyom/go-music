@@ -3,7 +3,7 @@ package controller
 import "net/http"
 
 type staticController interface {
-	HandleStatic(static_dir string) http.Handler
+	HandleStatic(staticDir string) http.Handler
 }
 
 type releaseController interface {

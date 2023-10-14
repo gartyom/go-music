@@ -16,9 +16,9 @@ func NewReleasePgRepo(db *sql.DB) releasePgRepository {
 	}
 }
 
-func (repo *release_pg_repsitory) GetById(release_id string) (*model.Release, error) {
+func (repo *release_pg_repsitory) GetById(releaseUuid string) (*model.Release, error) {
 	var r model.Release
-	err := repo.db.QueryRow("SELECT uuid, title, image FROM release WHERE uuid = $1", release_id).Scan(&r.Uuid, &r.Title, &r.Image)
+	err := repo.db.QueryRow("SELECT uuid, title, image FROM release WHERE uuid = $1", releaseUuid).Scan(&r.Uuid, &r.Title, &r.Image)
 	return &r, err
 }
 

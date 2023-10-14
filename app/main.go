@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -20,8 +21,7 @@ func main() {
 }
 
 func Run() error {
-	prod := false
-	conf := config.Get(prod)
+	conf := config.Get()
 
 	db := database.Connect(conf)
 	defer db.Close()
@@ -33,9 +33,9 @@ func Run() error {
 
 	urls.GetUrls(mux, cnt)
 
-	// address := fmt.Sprintf("%s:%s", os.Getenv("APP_HOST"), os.Getenv("APP_PORT"))
-	// fmt.Println("Listening on address:", address)
-	http.ListenAndServe("0.0.0.0:8080", mux)
+	addr := conf.AppHost + ":" + conf.AppPort
+	fmt.Println("Listening on address:", addr)
+	http.ListenAndServe(addr, mux)
 
 	return nil
 }
