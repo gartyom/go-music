@@ -3,6 +3,7 @@ package helpers
 import (
 	"archive/zip"
 	"errors"
+	"fmt"
 	"image"
 	"image/jpeg"
 	"mime/multipart"
@@ -123,6 +124,7 @@ func ExtractID3Metadata(zipReader *zip.Reader) error {
 		if err != nil {
 			return err
 		}
+		fmt.Printf("%x", metadataBuffer[:])
 	}
 	return nil
 }

@@ -20,7 +20,7 @@ type Config struct {
 	UploadsDir string `env:"UPLOADS_DIR"`
 	StaticDir  string `env:"STATIC_DIR"`
 	AppPort    string `env:"APP_PORT"`
-	AppHost    string `env:"APPP_HOST"`
+	AppHost    string `env:"APP_HOST"`
 }
 
 var (
