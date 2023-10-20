@@ -1,13 +1,12 @@
 package controller
 
 import (
-	"archive/zip"
+	"fmt"
 	"log"
 	"net/http"
 	"text/template"
 
 	"github.com/gartyom/go-music/config"
-	"github.com/gartyom/go-music/helpers"
 	"github.com/gartyom/go-music/service"
 )
 
@@ -37,35 +36,17 @@ func (rc *release_controller) ServeAddTemplate(w http.ResponseWriter, r *http.Re
 
 func (rc *release_controller) New(w http.ResponseWriter, r *http.Request) {
 
-	release := helpers.ParseReleaseForm(r)
-	if release.Err != nil {
-		log.Println(release.Err.Error())
-		http.Error(w, release.Err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	fileSize, err := helpers.GetArchiveSize(release.Archive)
-
-	unzipper, err := zip.NewReader(release.Archive, fileSize)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = helpers.CheckArchiveFiles(unzipper)
+	metadata, err := rc.service.ReleaseForm.Deconstruct(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	err = helpers.ExtractID3Metadata(unzipper)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	for _, item := range *metadata {
+		fmt.Println(item.Format.Tags.Title, item.Format.Tags.Album)
 	}
+	// err = helpers.saveReleaseLocally(unzipper)
+
 	// artists, err := rc.service.Artist.GetByNameMany(release.Artist, "")
 	// if err != nil {
 	// 	log.Println(err.Error())

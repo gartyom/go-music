@@ -1,39 +1,22 @@
-{{ define "content" }}
-<div class="w-[calc(100%-40px)] h-fit mx-auto pt-5 pb-16" id="add">
-    <form enctype="multipart/form-data" hx-post="/release" hx-trigger="submit" id="add-form" hx-swap="none">
-        <div class="m-5 relative">
-            <div class="font-bold text-lg">Артист</div>
-            <input class="border border-stone-900 focus:outline-none rounded-none" type="search" name="artist"
-                id="input-artist"><br>
-        </div>
-        <div class="m-5 relative">
-            <div class="font-bold text-lg">Релиз</div>
-            <input class="border border-stone-900 focus:outline-none rounded-none" type="search" name="release"
-                id="input-release"><br>
-        </div>
-        <div class="m-5 relative">
-            <div class="font-bold text-lg">Обложка</div>
-            <div class="font-normal text-base" id="input-cover-description">Выберите файл (jpeg/jpg)</div>
-            <input class="hidden" id="input-cover" type="file" name="release_cover" />
-            <label class="w-40 h-40 block border border-stone-900 rounded-md bg-stone-900 overflow-hidden"
-                for="input-cover">
+{{define "content"}}
+<div class="w-[calc(100%-40px)] h-screen relative m-auto" id="add">
+    <form class="w-4/5 border border-stone-900 top-1/2 relative  max-w-fit -translate-y-1/2 rounded-md mx-auto"
+        enctype="multipart/form-data" hx-post="/release" hx-trigger="submit" id="add-form" hx-swap="none">
+        <div class="m-5  relative">
+            <div class="font-bold text-2xl">Добавьте релиз</div>
+            <div class="w-full font-normal text-base h-6" id="input-archive-description">Выберите zip архив.</div>
+            <input class="hidden" id="input-archive" type="file" name="archive" required="true" />
+            <label class="w-40 h-40 block border border-stone-900 rounded-md bg-stone-900 mx-auto mt-5"
+                for="input-archive">
                 <img class="object-cover w-8 h-8 mx-auto top-1/2 -translate-y-2/4 relative" src="/static/icons/plus.png"
-                    id="label-cover-image" />
+                    id="label-archive-image" />
             </label>
         </div>
-        <div class="m-5 relative">
-            <div class="font-bold text-lg">Песни</div>
-            <div class="font-normal text-base" id="input-song-description">Добавьте архив с песнями (zip)</div>
-            <input class="hidden" id="input-song" type="file" name="release_songs" />
-            <label class="w-40 h-40 block border border-stone-900 rounded-md bg-stone-900" for="input-song">
-                <img class="object-cover w-8 h-8 mx-auto top-1/2 -translate-y-2/4 relative" src="/static/icons/plus.png"
-                    id="label-song-image" />
-            </label>
-        </div>
-        <button class="w-40 h-12 bg-stone-900 m-5 rounded-md text-stone-50 font-bold" type="submit">Добавить</button>
+        <button class="w-[calc(100%-40px)] h-12 bg-stone-900 m-5 rounded-md text-stone-50 font-bold"
+            type="submit">Добавить</button>
     </form>
     <script src="/static/js/add.js"></script>
 </div>
-{{ end }}
+{{end}}
 
 {{ template "content"}}

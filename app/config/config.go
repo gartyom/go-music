@@ -21,6 +21,7 @@ type Config struct {
 	StaticDir  string `env:"STATIC_DIR"`
 	AppPort    string `env:"APP_PORT"`
 	AppHost    string `env:"APP_HOST"`
+	TmpDir     string `env:"TMP_DIR"`
 }
 
 var (
@@ -55,6 +56,7 @@ func Get() *Config {
 				StaticDir:  "./static",
 				AppPort:    "8000",
 				AppHost:    "0.0.0.0",
+				TmpDir:     "../tmp",
 			}
 			configBytes, err = json.MarshalIndent(Conf, "", "  ")
 			if err != nil {

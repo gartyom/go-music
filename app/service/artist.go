@@ -17,7 +17,7 @@ func NewArtistService(repo *repository.Repository) artistService {
 	}
 }
 
-func (as *artist_service) New(artistName string, image string) (*model.Artist, error) {
+func (as *artist_service) New(artistName string) (*model.Artist, error) {
 
 	return nil, nil
 }
@@ -30,7 +30,7 @@ func (as *artist_service) GetByName(artistName string) (*model.Artist, error) {
 func (as *artist_service) GetByNameMany(artistName string, sep string) ([]*model.Artist, error) {
 
 	if sep == "" {
-		sep = "/"
+		sep = ","
 	}
 
 	var a []*model.Artist
