@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -79,6 +80,7 @@ type tags struct {
 	Album       string `json:"ALBUM"`
 	AlbumArtist string `json:"album_artist"`
 	Artist      string `jsong:"ARTIST"`
+	Track       string `json:"track"`
 }
 
 type format struct {
@@ -96,6 +98,7 @@ func extractmetadata(reader io.Reader) (*Meta, error) {
 		return nil, err
 	}
 
+	fmt.Println(metaStr)
 	var metadata Meta
 	err = json.Unmarshal([]byte(metaStr), &metadata)
 	if err != nil {
@@ -104,28 +107,29 @@ func extractmetadata(reader io.Reader) (*Meta, error) {
 	return &metadata, nil
 }
 
-func checkmetadata(file *zip.File) error {
+func checkmetadata(file *zip.File) (*Meta, error) {
 
 	reader, err := file.Open()
 	defer reader.Close()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s, err := extractmetadata(reader)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if s.Format.Tags.Album != "" && s.Format.Tags.AlbumArtist != "" && s.Format.Tags.Title != "" && s.Format.Tags.Artist != "" {
-		return nil
+	if s.Format.Tags.Album != "" && s.Format.Tags.Title != "" && s.Format.Tags.Artist != "" {
+		return s, err
 	} else {
-		return errors.New("No metadata in song(s)")
+		return nil, errors.New("No metadata in song(s)")
 	}
 
 }
 
-func checkArchiveFiles(zipReader *zip.Reader) error {
+func checkArchiveFiles(zipReader *zip.Reader) (*[]Meta, error) {
+	var releaseMeta []Meta
 	flacMarkerBuffer := make([]byte, 4)
 	for _, file := range zipReader.File {
 		if file.FileInfo().IsDir() {
@@ -134,45 +138,31 @@ func checkArchiveFiles(zipReader *zip.Reader) error {
 
 		err := checkFileType(file, &flacMarkerBuffer)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		err = checkmetadata(file)
+		m, err := checkmetadata(file)
 		if err != nil {
-			return err
+			return nil, err
 		}
-
+		releaseMeta = append(releaseMeta, *m)
 	}
-	return nil
+	return &releaseMeta, nil
 }
 
-func (service *release_form) Deconstruct(r *http.Request) (*[]Meta, error) {
+func (service *release_form) Deconstruct(r *http.Request) (*[]Meta, *zip.Reader, error) {
 
 	unzipper, err := getUnzipper(r)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	err = checkArchiveFiles(unzipper)
+	releaseMeta, err := checkArchiveFiles(unzipper)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var a []Meta
-
-	for _, file := range unzipper.File {
-		rc, err := file.Open()
-		if err != nil {
-			return nil, err
-		}
-		m, err := extractmetadata(rc)
-		if err != nil {
-			return nil, err
-		}
-		a = append(a, *m)
-	}
-
-	return &a, nil
+	return releaseMeta, unzipper, nil
 }
 
 // func SaveReleaseLocally(zipReader *zip.Reader) error {

@@ -36,14 +36,15 @@ func (rc *release_controller) ServeAddTemplate(w http.ResponseWriter, r *http.Re
 
 func (rc *release_controller) New(w http.ResponseWriter, r *http.Request) {
 
-	metadata, err := rc.service.ReleaseForm.Deconstruct(r)
+	releaseData, reader, err := rc.service.ReleaseForm.Deconstruct(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	for _, item := range *metadata {
-		fmt.Println(item.Format.Tags.Title, item.Format.Tags.Album)
+
+	for _, item := range *releaseData {
+		fmt.Println(item.Format.Tags.Title, item.Format.Tags.Album, item.Format.Tags.AlbumArtist, item.Format.Tags.Track)
 	}
 	// err = helpers.saveReleaseLocally(unzipper)
 

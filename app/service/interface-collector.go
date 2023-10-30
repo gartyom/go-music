@@ -1,6 +1,7 @@
 package service
 
 import (
+	"archive/zip"
 	"image"
 	"net/http"
 
@@ -18,5 +19,5 @@ type releaseService interface {
 }
 
 type releaseFormService interface {
-	Deconstruct(r *http.Request) (*[]Meta, error)
+	Deconstruct(r *http.Request) (*[]Meta, *zip.Reader, error)
 }
